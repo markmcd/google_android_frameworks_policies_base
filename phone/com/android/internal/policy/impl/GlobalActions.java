@@ -42,6 +42,7 @@ import com.android.internal.R;
 import com.android.internal.app.ShutdownThread;
 import com.google.android.collect.Lists;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -171,6 +172,28 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mSilentModeToggle,
                 // next: airplane mode
                 mAirplaneModeOn,
+                // next: reboot!
+                new SinglePressAction(
+                        com.android.internal.R.drawable.ic_menu_refresh,
+                        R.string.global_action_reboot) {
+
+                    public void onPress() {
+                        // reboot, logging failure
+                        try {
+                            android.os.Power.reboot("user request");
+                        } catch (IOException e) {
+                            Log.e(TAG, "Reboot failed!", e);
+                        }
+                    }
+
+                    public boolean showDuringKeyguard() {
+                        return true;
+                    }
+
+                    public boolean showBeforeProvisioning() {
+                        return true;
+                    }
+                },
                 // last: power off
                 new SinglePressAction(
                         com.android.internal.R.drawable.ic_lock_power_off,
